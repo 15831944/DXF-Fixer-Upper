@@ -1,0 +1,1 @@
+Converts DXFs from Solidworks to just polylines & other closed shapes so our laser cutter stops complaining
