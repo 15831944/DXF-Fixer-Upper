@@ -15,6 +15,18 @@
 #include "lib/ui_button.cpp"
 #include "lib/ui_impl_win32_opengl.cpp"
 
+void DrawUI(element *root) {
+   element *page = ColumnPanel(root, root->bounds, Captures(INTERACTION_FILEDROP));
+   Label(page, "Drop DXFs Here", Size(page), 60, BLACK);
+
+   ui_dropped_files dropped_files = GetDroppedFiles(page);
+   for(u32 i = 0; i < dropped_files.count; i++) {
+      string file_path = dropped_files.names[i];
+
+      //TODO: the rest of the app
+   }
+}
+
 int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
    Win32CommonInit(PlatformAllocArena(Megabyte(10)));
    ui_impl_win32_window window = createWindow("DXF Fixer Upper");
@@ -26,21 +38,12 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
    ui_context.filedrop_arena = PlatformAllocArena(Megabyte(2));
    ui_context.font = &font;
 
-   LARGE_INTEGER frequency;
-   QueryPerformanceFrequency(&frequency); 
-
-   LARGE_INTEGER timer;
-   QueryPerformanceCounter(&timer);
+   Timer timer = InitTimer();
    while(PumpMessages(&window, &ui_context)) {
       Reset(&__temp_arena);
       
-      LARGE_INTEGER new_time;
-      QueryPerformanceCounter(&new_time);
-      f32 dt = (f32)(new_time.QuadPart - timer.QuadPart) / (f32)frequency.QuadPart;
-      timer = new_time;
-
-      element *root_element = beginFrame(window.size, &ui_context, dt);
-      //TODO: literally the entire app
+      element *root_element = beginFrame(window.size, &ui_context, GetDT(&timer));
+      DrawUI(root_element);
       endFrame(&window, root_element);
    }
 
