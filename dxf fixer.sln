@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2050
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dxf fixer", "dxf fixer\dxf fixer.csproj", "{8AA244AC-523A-4976-9BB7-FA6A65B21CBE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8AA244AC-523A-4976-9BB7-FA6A65B21CBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AA244AC-523A-4976-9BB7-FA6A65B21CBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AA244AC-523A-4976-9BB7-FA6A65B21CBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AA244AC-523A-4976-9BB7-FA6A65B21CBE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CFBA1CC2-8708-4FF9-B145-26303A656A73}
+	EndGlobalSection
+EndGlobal
