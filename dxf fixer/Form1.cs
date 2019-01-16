@@ -9,10 +9,16 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using netDxf;
+using netDxf.Entities;
+using netDxf.Blocks;
+using netDxf.Tables;
+
 namespace dxf_fixer
 {
 	public partial class Form1 : Form
 	{
+
 		public Form1()
 		{
 			InitializeComponent();
@@ -42,13 +48,64 @@ namespace dxf_fixer
 		{
 			foreach (string file in files)
 			{
-				//read file into string array
-				string[] fileTxt = File.ReadAllLines(file);
-				
-				foreach (string line in fileTxt)
+				DxfDocument dxf = new DxfDocument();
+				dxf.Load(file);
+
+				DxfDocument newDxf = new DxfDocument();
+
+				foreach (Arc i in dxf.Arcs)
 				{
-					//TODO: Everything else
+					Polyline x = i.ToPolyline(100);
+
+					newDxf.AddEntity(x);
 				}
+
+				foreach (IEntityObject i in dxf.Circles)
+				{
+					newDxf.AddEntity(i);
+				}
+				foreach (IEntityObject i in dxf.Ellipses)
+				{
+					newDxf.AddEntity(i);
+				}
+				foreach (IEntityObject i in dxf.Faces3d)
+				{
+					newDxf.AddEntity(i);
+				}
+				foreach (IEntityObject i in dxf.Hatches)
+				{
+					newDxf.AddEntity(i);
+				}
+				foreach (IEntityObject i in dxf.Inserts)
+				{
+					newDxf.AddEntity(i);
+				}
+				foreach (IEntityObject i in dxf.Lines)
+				{
+					newDxf.AddEntity(i);
+				}
+				foreach (IEntityObject i in dxf.NurbsCurves)
+				{
+					newDxf.AddEntity(i);
+				}
+				foreach (IEntityObject i in dxf.Points)
+				{
+					newDxf.AddEntity(i);
+				}
+				foreach (IEntityObject i in dxf.Polylines)
+				{
+					newDxf.AddEntity(i);
+				}
+				foreach (IEntityObject i in dxf.Solids)
+				{
+					newDxf.AddEntity(i);
+				}
+				foreach (IEntityObject i in dxf.Texts)
+				{
+					newDxf.AddEntity(i);
+				}
+
+				dxf.Save(file, netDxf.Header.DxfVersion.AutoCad12);
 			}
 		}
 	}
