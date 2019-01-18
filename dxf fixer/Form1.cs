@@ -105,7 +105,7 @@ namespace dxf_fixer
 					newDxf.AddEntity(i);
 				}
 
-				dxf.Save(file, netDxf.Header.DxfVersion.AutoCad12);
+				newDxf.Save(file, netDxf.Header.DxfVersion.AutoCad12);
 			}
 		}
 	}
