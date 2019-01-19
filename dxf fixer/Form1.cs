@@ -1,4 +1,5 @@
-﻿using System;
+﻿extern alias R12;  //this version of netDxf is from this fork: https://github.com/mfarquhar/netDXF, it supports saving in R12 but is very old
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,8 +12,6 @@ using System.Windows.Forms;
 
 using netDxf;
 using netDxf.Entities;
-using netDxf.Blocks;
-using netDxf.Tables;
 
 namespace dxf_fixer
 {
@@ -25,11 +24,6 @@ namespace dxf_fixer
 			AllowDrop = true;
 			DragEnter += new DragEventHandler(dragEnter);
 			DragDrop += new DragEventHandler(dragDrop);
-		}
-
-		private void Form1_Load(object sender, EventArgs e)
-		{
-
 		}
 
 		void dragEnter(object sender, DragEventArgs e)
@@ -48,64 +42,46 @@ namespace dxf_fixer
 		{
 			foreach (string file in files)
 			{
-				DxfDocument dxf = new DxfDocument();
-				dxf.Load(file);
+				//open in the version that supports saving and opening R12, do all the work in latest version, then save as R12
 
-				DxfDocument newDxf = new DxfDocument();
+				string fileName = Path.GetFileName(file);
+				string tempFileName = file.Substring(0, file.Length - fileName.Length) + "TMP.DXF";
+				Console.WriteLine(fileName.Substring(fileName.Length - 4).ToLower());
+				if (fileName == null || fileName.Substring(fileName.Length-4).ToLower() != ".dxf") continue;
 
-				foreach (Arc i in dxf.Arcs)
-				{
-					Polyline x = i.ToPolyline(100);
+				//open as R12 and save in different format for newer library
+				R12.netDxf.DxfDocument inputDxf = new R12.netDxf.DxfDocument();
+				inputDxf.Load(file);
 
-					newDxf.AddEntity(x);
-				}
+				inputDxf.Save(tempFileName, R12.netDxf.Header.DxfVersion.AutoCad2010);
 
-				foreach (IEntityObject i in dxf.Circles)
+				//open in new library and do all the editing
+				DxfDocument workingDxf = DxfDocument.Load(tempFileName);
+
+				Arc[] toRemove = new Arc[workingDxf.Arcs.Count()];
+				LwPolyline[] toAdd = new LwPolyline[workingDxf.Arcs.Count()];
+				int count = 0;
+				foreach (Arc i in workingDxf.Arcs)
 				{
-					newDxf.AddEntity(i);
-				}
-				foreach (IEntityObject i in dxf.Ellipses)
-				{
-					newDxf.AddEntity(i);
-				}
-				foreach (IEntityObject i in dxf.Faces3d)
-				{
-					newDxf.AddEntity(i);
-				}
-				foreach (IEntityObject i in dxf.Hatches)
-				{
-					newDxf.AddEntity(i);
-				}
-				foreach (IEntityObject i in dxf.Inserts)
-				{
-					newDxf.AddEntity(i);
-				}
-				foreach (IEntityObject i in dxf.Lines)
-				{
-					newDxf.AddEntity(i);
-				}
-				foreach (IEntityObject i in dxf.NurbsCurves)
-				{
-					newDxf.AddEntity(i);
-				}
-				foreach (IEntityObject i in dxf.Points)
-				{
-					newDxf.AddEntity(i);
-				}
-				foreach (IEntityObject i in dxf.Polylines)
-				{
-					newDxf.AddEntity(i);
-				}
-				foreach (IEntityObject i in dxf.Solids)
-				{
-					newDxf.AddEntity(i);
-				}
-				foreach (IEntityObject i in dxf.Texts)
-				{
-					newDxf.AddEntity(i);
+					toRemove[count] = i;
+					toAdd[count] = i.ToPolyline(1000);
+					count++;
 				}
 
-				newDxf.Save(file, netDxf.Header.DxfVersion.AutoCad12);
+				for (int i = 0; i < toRemove.Length; i++)
+				{
+					workingDxf.RemoveEntity(toRemove[i]);
+					workingDxf.AddEntity(toAdd[i]);
+				}
+
+				workingDxf.Save(tempFileName);
+
+				//open it back in R12 library and save as R12
+				R12.netDxf.DxfDocument outputDxf = new R12.netDxf.DxfDocument();
+				outputDxf.Load(tempFileName);
+
+				outputDxf.Save(file.Insert(file.Length - 4, "_FIXED"), R12.netDxf.Header.DxfVersion.AutoCad12);
+				File.Delete(tempFileName);
 			}
 		}
 	}
